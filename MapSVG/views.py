@@ -196,7 +196,7 @@ def calculate_position_min_max(beacon_json):
     """
     x_s = (max(l) + min(r)) / 2
     y_s = (min(t) + max(b)) / 2
-    f = open("coordinate_stimate.csv", 'a')
+    f = open("coordinate_stimate_min_max.csv", 'a')
     f.write(x_s + "," + y_s + "\n")
     f.close()
     position = {'CoordinateStimate': {'pos_X': x_s, 'pos_Y': y_s}}
@@ -389,7 +389,9 @@ def calculate_position_min_max_path_loss(beacon_json):
     """
     x_s = (max(l) + min(r)) / 2
     y_s = (min(t) + max(b)) / 2
-
+    f = open("coordinate_stimate_min_max_path_loss.csv", 'a')
+    f.write(x_s + "," + y_s + "\n")
+    f.close()
     position = {'CoordinateStimate': {'pos_X': x_s, 'pos_Y': y_s}}
     print "Coordinate stimate", x_s, y_s
     # print "Vertice l", l

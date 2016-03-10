@@ -129,7 +129,7 @@ def beacon_data(request):
     if request.method == 'POST':
         print "E' arrivata una POST" + request.body
         # print "dict['Name']: ", dict['4665']['pos_X']
-        # response = calculate_position_min_max(request.body)
+        #response = calculate_position_min_max(request.body)
         response = calculate_position_min_max_path_loss(request.body)
         # response = calculate_position_min_max_path_loss_box(request.body)
         # response = calculate_position_trilateration(request.body)
@@ -161,12 +161,12 @@ def calculate_position_min_max(beacon_json):
         x = value[0]['pos_XM']
         # print "dict['Name']: ", dict[index]['pos_X']
         y = value[0]['pos_YM']
-        print "RSSI0 " + str(value[0]["RSSI0"]) + " RSSI " + beacon['RSSI']
+        print "RSSI0 " + str(value[0]["RSSI0"]) + " RSSI " + str(beacon['RSSI'])
         # indice = (-56 - int(beacon['RSSI']) - (value[0]["Xg"])) / (10 * (value[0]["n"]))
         # d = 10 ** indice
         # del medie[0]
         # medie.append(d)
-        print "La distanza da " + beacon["Maj"] + " e' in metri "  # +str(d)
+        print "La distanza da " + beacon["Maj"] + " e' in metri " + str(beacon['CalculatedDistance'])
 
         # print "anchor", beacon['CalculatedDistance']
         # l.append((x - beacon['CalculatedDistance']))
@@ -186,7 +186,7 @@ def calculate_position_min_max(beacon_json):
     print "RSSI ", data[1]['RSSI']
     print "RSSI calculated distance", data[1]['CalculatedDistance']
 
-    if (data[1]['Maj']) == '4669':
+    if (data[1]['Maj']) == '4669':djkombu_queue
         f = open("beacon.txt", 'a')
         f.write("Maj " + data[1]['Maj'] + "\n")
         f.write("RSSI " + data[1]['RSSI'] + "\n")
@@ -196,7 +196,9 @@ def calculate_position_min_max(beacon_json):
     """
     x_s = (max(l) + min(r)) / 2
     y_s = (min(t) + max(b)) / 2
-
+    f = open("coordinate_stimate.csv", 'a')
+    f.write(x_s + "," + y_s + "\n")
+    f.close()
     position = {'CoordinateStimate': {'pos_X': x_s, 'pos_Y': y_s}}
     print "Coordinate stimate", x_s, y_s
     # print "Vertice l", l

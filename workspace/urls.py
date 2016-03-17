@@ -2,6 +2,8 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework.urlpatterns import format_suffix_patterns
 from MapSVG import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     # Examples:
@@ -18,9 +20,13 @@ urlpatterns = [
     url(r'^beaconData/(?P<idMappa>[a-zA-Z0-9]+)$', views.beacon_data),
     url(r'^download/$', views.download_file),
     url(r'^download/(?P<filename>.*)$', views.download_file),
-    #url(r'^download/(?P<file_name>[a-zA-Z0-9]+)$', views.download_file)
+    url(r'^test/$', views.simple_html_view),
+    url(r'^', views.simple_html_view),
+    #url(r'^/$', views.simple_html_view),
+    # url(r'^download/(?P<file_name>[a-zA-Z0-9]+)$', views.download_file)
 
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns = format_suffix_patterns(urlpatterns)
+
 

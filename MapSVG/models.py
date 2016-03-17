@@ -9,8 +9,6 @@ LANGUAGE_CHOICES = sorted([(item[1][0], item[0]) for item in LEXERS])
 STYLE_CHOICES = sorted((item, item) for item in get_all_styles())
 
 
-
-
 # Create your models here.
 
 class Map(models.Model):
@@ -57,4 +55,16 @@ class TrackingBeacon(models.Model):
     def __unicode__(self):
         return self.UUID
 
+"""
+from apscheduler.schedulers.blocking import BlockingScheduler
 
+sched = BlockingScheduler()
+
+
+@sched.scheduled_job('interval', id='my_job_id', seconds=5)
+def my_interval_job():
+    print 'Hello World!'
+
+
+sched.start()
+"""

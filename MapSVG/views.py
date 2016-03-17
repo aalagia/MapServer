@@ -1,7 +1,8 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, renderer_classes
 from django.http import HttpResponse
-from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
+from rest_framework.renderers import JSONRenderer, StaticHTMLRenderer, TemplateHTMLRenderer
 from models import Document
 from serializers import DocumentSerializers
 from models import ParameterBeacon
@@ -47,6 +48,8 @@ prova1 = {};
 medie = [0] * 20;
 
 
+
+
 class JSONResponse(HttpResponse):
     """
     An HttpResponse that renders its content into JSON.
@@ -57,6 +60,12 @@ class JSONResponse(HttpResponse):
         kwargs['content_type'] = 'application/json'
 
         super(JSONResponse, self).__init__(content, **kwargs)
+
+@api_view(('GET',))
+@renderer_classes((TemplateHTMLRenderer,))
+def simple_html_view(request):
+    #data = '<html><body><h1>Hello, world</h1></body></html>'
+    return Response(template_name='SpinMap2.html')
 
 
 def urlify(s):
@@ -129,8 +138,8 @@ def beacon_data(request):
     if request.method == 'POST':
         print "E' arrivata una POST" + request.body
         # print "dict['Name']: ", dict['4665']['pos_X']
-        #response = calculate_position_min_max(request.body)
-        response = calculate_position_min_max_path_loss(request.body)
+        response = calculate_position_min_max(request.body)
+        # response = calculate_position_min_max_path_loss(request.body)
         # response = calculate_position_min_max_path_loss_box(request.body)
         # response = calculate_position_trilateration(request.body)
         # data = json.loads(request.POST.get('TerminalName'))
@@ -196,9 +205,9 @@ def calculate_position_min_max(beacon_json):
     """
     x_s = (max(l) + min(r)) / 2
     y_s = (min(t) + max(b)) / 2
-    f = open("coordinate_stimate_min_max.csv", 'a')
-    f.write(x_s + "," + y_s + "\n")
-    f.close()
+    #f = open("coordinate_stimate_min_max.csv", 'a')
+    #f.write(str(x_s) + "," + str(y_s) + "\n")
+    #f.close()
     position = {'CoordinateStimate': {'pos_X': x_s, 'pos_Y': y_s}}
     print "Coordinate stimate", x_s, y_s
     # print "Vertice l", l
@@ -272,19 +281,29 @@ def calculate_position_min_max_path_loss_box(beacon_json):
     t = []
     b = []
     for beacon in data:
+        serializer = TrackingBeaconSerializers(data=beacon)
+        if serializer.is_valid():
+            print "Sto salvando"
+            serializer.save()
+
+
+
         parameter = ParameterBeacon.objects.filter(idSensor=beacon['Maj'])
         serializer = ParameterBeaconSerializers(parameter, many=True)
-
+        valueRSSI = TrackingBeacon.objects.filter(Maj=beacon['Maj']).order_by('-created')[:40].aggregate(Avg('RSSI'))
+        print "Cosa ritorna", valueRSSI['RSSI__avg']
+        # serializerRSSI = TrackingBeaconSerializers(valueRSSI, many=True)
+        # valueDBRSSI=json.loads(json.dumps(serializerRSSI.data))
         value = json.loads(json.dumps(serializer.data))
-
+        #
         print "RSSI0", value[0]["Xg"]
 
         x = value[0]['pos_XM']
         # print "dict['Name']: ", dict[index]['pos_X']
         y = value[0]['pos_YM']
-        print "RSSI0Box " + str(value[0]["RSSI0Box"]) + " RSSI " + beacon['RSSI']
-
-        d = pow(10, (value[0]["RSSI0Box"] - int(beacon['RSSI'])) / value[0]["coff"])
+        print "RSSI0 " + str(value[0]["RSSI0Box"]) + " RSSI " + str(beacon['RSSI'])
+        indice = ((value[0]["RSSI0Box"] - int(valueRSSI['RSSI__avg'])) / value[0]["coff"])
+        d = 10 ** indice
         # del medie[0]
         # medie.append(d)
         print "La distanza da " + beacon["Maj"] + " e' in metri " + str(d)
@@ -389,9 +408,9 @@ def calculate_position_min_max_path_loss(beacon_json):
     """
     x_s = (max(l) + min(r)) / 2
     y_s = (min(t) + max(b)) / 2
-    f = open("coordinate_stimate_min_max_path_loss.csv", 'a')
-    f.write(x_s + "," + y_s + "\n")
-    f.close()
+    #f = open("coordinate_stimate_min_max_path_loss.csv", 'a')
+    #f.write(str(x_s) + "," + str(y_s) + "\n")
+    #f.close()
     position = {'CoordinateStimate': {'pos_X': x_s, 'pos_Y': y_s}}
     print "Coordinate stimate", x_s, y_s
     # print "Vertice l", l

@@ -5,7 +5,7 @@
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1"/>
-    <title>Another DEMO for zoom/pan/drag/rotate plugin using Snap.svg</title>
+    <title>Mappa</title>
 
     <link href="static/css/bootstrap.css" rel="stylesheet">
     <link href="static/css/bootstrap-responsive.css" rel="stylesheet">
@@ -779,27 +779,35 @@
         console.log("ID:4662 " + position1.xDocPosition + " " + position1.yDocPosition);
         console.log("ID:4668 " + position2.xDocPosition + " " + position2.yDocPosition);
         console.log("ID:4665 " + position3.xDocPosition + " " + position3.yDocPosition);*/
-        var circle1 = paper.circle((position11.xMapPosition*matrix.a)/0.008, (position11.yMapPosition*matrix.a)/0.008, 15/0.008).attr({
+        var circle1 = paper.circle(39107.77958, 50288.0582, 15/0.008).attr({
+            id: "sensor1",
             fill: "#00d2ff"
         });
 
         var circle2 = paper.circle(38179.95562, 88653.57861, 15/0.008).attr({
+            id: "sensor2",
             fill: "#00d2ff"
         });
-        var circle3 = paper.circle((position33.xMapPosition*matrix.a)/0.008, (position33.yMapPosition*matrix.a)/0.008, 15/0.008).attr({
+        var circle3 = paper.circle(68427.01646, 50288.0582, 15/0.008).attr({
+            id: "sensor3",
             fill: "#00d2ff"
         });
-        var circle4 = paper.circle((position44.xMapPosition*matrix.a)/0.008, (position44.yMapPosition*matrix.a)/0.008, 15/0.008).attr({
+        var circle4 = paper.circle(69122.88442, 93292.69837, 15/0.008).attr({
+            id: "sensor4",
             fill: "#00d2ff"
         });
-
+        /*
         var circle5 = paper.circle(55669.4371, 78865.03, 15/0.008).attr({
+            id: "sensor4",
             fill: "#ffffff"
         });
+        */
         var circle6 = paper.circle(38875.82359, 70236.27317, 15/0.008).attr({
+            id: "sensor5",
             fill: "#00d2ff"
         });
-         var circle7 = paper.circle(63648.72311, 66061.06538, 15/0.008).attr({
+         var circle7 = paper.circle(69818.75239, 66061.06538, 15/0.008).attr({
+             id: "sensor6",
             fill: "#00d2ff"
         });
         var position1 = mapPosToDocPos(39096.2108, 50270.3781);
@@ -816,7 +824,7 @@
         zpdGroup.add(circle2);
         zpdGroup.add(circle3);
         zpdGroup.add(circle4);
-        zpdGroup.add(circle5);
+        //zpdGroup.add(circle5);
         zpdGroup.add(circle6);
         zpdGroup.add(circle7);
     };

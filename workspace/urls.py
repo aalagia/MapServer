@@ -1,5 +1,6 @@
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.views.generic import TemplateView
 from rest_framework.urlpatterns import format_suffix_patterns
 from MapSVG import views
 from django.conf import settings
@@ -20,8 +21,7 @@ urlpatterns = [
     url(r'^beaconData/(?P<idMappa>[a-zA-Z0-9]+)$', views.beacon_data),
     url(r'^download/$', views.download_file),
     url(r'^download/(?P<filename>.*)$', views.download_file),
-    url(r'^test/$', views.simple_html_view),
-    url(r'^', views.simple_html_view),
+    url(r'^', TemplateView.as_view(template_name='SpinMap2.html')),
     #url(r'^/$', views.simple_html_view),
     # url(r'^download/(?P<file_name>[a-zA-Z0-9]+)$', views.download_file)
 

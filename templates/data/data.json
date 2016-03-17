@@ -1,0 +1,57 @@
+{"media":[
+
+    {"Title":"Doc1",
+     "Type":"doc",
+     "url":"/media/xxx.pdf", 
+     "Comment":"Bello pdf", 
+     "Position":[76,132,0] },
+
+    {"Title":"Vid1", 
+     "Type":"video",
+     "url":"/media/xxx.mpg", 
+     "Comment":"Bello video", 
+      "Position":[76,135,0]  },
+
+    {"Title":"Imm1", 
+     "Type":"still",
+     "url":"/media/xxx.jpg", 
+     "Comment":"Bella foto", 
+      "Position":[76,134,0] },
+    
+    {"Title":"Doc2", 
+     "Type":"still",
+     "url":"/media/xxx2.pdf", 
+     "Comment":"Bello pdf", 
+     "Position":[475,620,0] },
+
+    {"Title":"Vid2", 
+     "Type":"still",
+     "url":"/media/xxx2.mpg", 
+     "Comment":"Bello video", 
+      "Position":[55,668,0]  },
+
+    {"Title":"Imm2", 
+     "Type":"video",
+     "url":"/media/xxx2.jpg", 
+     "Comment":"Bella foto", 
+      "Position":[701,414,0] },
+    
+    {"Title":"Doc3", 
+     "Type":"doc",
+     "url":"/media/xxx3.pdf", 
+     "Comment":"Bello pdf", 
+     "Position":[706,414,0] },
+
+    {"Title":"Vid3", 
+     "Type":"still",
+     "url":"/media/xxx3.mpg", 
+     "Comment":"Bello video", 
+      "Position":[759,673,0]  },
+
+    {"Title":"Imm3", 
+     "Type":"video",
+     "url":"/media/xxx3.jpg", 
+     "Comment":"Bella foto", 
+      "Position":[844,469,0] }
+
+]}

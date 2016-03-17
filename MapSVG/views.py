@@ -61,12 +61,6 @@ class JSONResponse(HttpResponse):
 
         super(JSONResponse, self).__init__(content, **kwargs)
 
-@api_view(('GET',))
-@renderer_classes((TemplateHTMLRenderer,))
-def simple_html_view(request):
-    #data = '<html><body><h1>Hello, world</h1></body></html>'
-    return Response(template_name='SpinMap2.html')
-
 
 def urlify(s):
     # Remove all non-word characters (everything except numbers and letters)

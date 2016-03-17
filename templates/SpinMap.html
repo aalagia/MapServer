@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Another DEMO for zoom/pan/drag/rotate plugin using Snap.svg</title>
+    <style>
+        html, body { margin:0; padding:0; overflow:hidden }
+        svg { position:fixed; top:0; left:0; height:100%; width:100%;
+            background: -webkit-radial-gradient(#7E7A7A, #434141, #000); /* Safari 5.1 to 6.0 */
+            background: -o-radial-gradient(#7E7A7A, #434141, #000); /* For Opera 11.6 to 12.0 */
+            background: -moz-radial-gradient(#7E7A7A, #434141, #000); /* For Firefox 3.6 to 15 */
+            background: radial-gradient(#7E7A7A, #434141, #000); /* Standard syntax */
+        }
+        .button {
+            position: fixed;
+            right: 50px;
+            bottom: 50px;
+            z-index: 100;
+        }
+        #selected{
+            color: white;
+        }
+    </style>
+
+    <script src="static/lib/snap.svg.js"></script>
+    <script src="static/lib/snap.svg.zpd.js"></script>
+</head>
+<body>
+
+<div class="button">
+    <button id="drawSquare">Draw Square</button>
+    <br/>
+    <button id="drawSquareInside">Draw Square inside</button>
+    <button id="down">Down</button>
+	<button id="circle">Circle</button>
+    
+</div>
+
+
+<script>
+
+    var paper = Snap();
+
+    var applyZpd = function() {
+        paper.zpd();
+    };
+
+   
+
+    Snap.load('./lib/SpinOffice2.svg', function (f) {
+        paper.append(f);
+		paper.circle(50,50,40);
+		paper.rect(20,20,100,100);
+        applyZpd();
+        paper.zoomTo(1.5, 100, null, function () {
+            paper.panTo('+200', '+200');
+        });
+
+  
+    });
+
+   // UI improvement needed
+    var intervalF;
+    var clearIntervalF = function () {
+        clearInterval(intervalF);
+    };
+    document.getElementById('drawSquare').onmousedown = function () {
+		paper.rect(100,100,100,100);
+        applyZpd();
+
+    };
+	
+	document.getElementById('drawSquareInside').onmousedown = function () {
+		// get the zpd element inside the svg
+		var zpdGroup = paper.select("g");
+
+		// create a new circle object
+		var circle = element.circle(20,20,15).attr({
+			fill: "#bada55"
+		});
+
+		// add the circle to the zpd group
+		zpdGroup.add(circle);
+
+    };
+   
+  
+</script>
+</body>
+
+</html>

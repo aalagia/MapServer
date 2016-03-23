@@ -26,29 +26,6 @@ from django.shortcuts import get_object_or_404
 from rest_framework.parsers import JSONParser
 import json
 
-"""positionBeacon = [
-
-    {'idbeacon': 4665,
-     'pos_X': 354.92,
-     'pos_Y': 642.57
-     }
-]
-
-pos = json.dumps(positionBeacon)
-
-dict = {'4665': {'pos_X': 354.92, 'pos_Y': 642.57}, '4662': {'pos_X': 362.38, 'pos_Y': 425.24},
-        '4668': {'pos_X': 598.21, 'pos_Y': 425.24}, '4664': {'pos_X': 603.80, 'pos_Y': 771.27}};
-"""
-dict = {'4665': {'pos_X': 8.23, 'pos_Y': 16.66}, '4662': {'pos_X': 8.43, 'pos_Y': 10.84},
-        '4668': {'pos_X': 14.75, 'pos_Y': 10.84}, '4664': {'pos_X': 14.90, 'pos_Y': 20.11},
-        '4669': {'pos_X': 12.43, 'pos_Y': 12.59}};
-
-prova1 = {};
-
-medie = [0] * 20;
-
-
-
 
 class JSONResponse(HttpResponse):
     """
@@ -85,12 +62,7 @@ def map_request(request, idMappa):
     if request.method == 'GET':
         print "ciao"
         document = Document.objects.filter(idMappa=idMappa)
-        # document = get_object_or_404(Document, idMappa=idMappa)
-        # document = Document.objects.all()
         serializer = DocumentSerializers(document, many=True)
-        # except Document.DoesNotExist:
-
-        #    return JSONResponse(serializer.errors, status=400)
         return JSONResponse({"media": serializer.data}, status=201)
 
     elif request.method == 'POST':
@@ -98,17 +70,15 @@ def map_request(request, idMappa):
         print request.data
         data = json.loads(request.POST.get('media'))
         up_file = request.FILES['file']
-        # filename = up_file.name
         filename = urlify(up_file.name)
         location = '/media/' + filename
         data['url'] = location
-        print data
-        # data = JSONParser().parse(request.data['media'])
+
         serializer = DocumentSerializers(data=data)
         if serializer.is_valid():
             print "Sto salvando"
             serializer.save()
-            # return JSONResponse(serializer.data, status=201)
+
 
         destination = open(location, 'wb+')
         print "Sono qui"
@@ -117,11 +87,9 @@ def map_request(request, idMappa):
 
         destination.close()
 
-        # ...
-        # do some stuff with uploaded file
-        # ...
+
         return JSONResponse(location, status=201)
-        # return JSONResponse(serializer.errors, status=400)
+
 
 
 @api_view(['GET', 'POST'])
@@ -131,13 +99,8 @@ def beacon_data(request):
 
     if request.method == 'POST':
         print "E' arrivata una POST" + request.body
-        # print "dict['Name']: ", dict['4665']['pos_X']
         response = calculate_position_min_max(request.body)
         # response = calculate_position_min_max_path_loss(request.body)
-        # response = calculate_position_min_max_path_loss_box(request.body)
-        # response = calculate_position_trilateration(request.body)
-        # data = json.loads(request.POST.get('TerminalName'))
-        # print "I beacon mi hanno inviato" + data["TerminalName"]
 
     return JSONResponse(response, status=201)
 
@@ -152,59 +115,33 @@ def calculate_position_min_max(beacon_json):
     for beacon in data:
         index = str(beacon['Maj'])
 
-        z = prova1.get(beacon['Maj'])
 
         parameter = ParameterBeacon.objects.filter(idSensor=beacon['Maj'])
         serializer = ParameterBeaconSerializers(parameter, many=True)
 
         value = json.loads(json.dumps(serializer.data))
 
-        print "RSSI0", value[0]["Xg"]
+        print "Xg", value[0]["Xg"]
 
         x = value[0]['pos_XM']
-        # print "dict['Name']: ", dict[index]['pos_X']
+
         y = value[0]['pos_YM']
         print "RSSI0 " + str(value[0]["RSSI0"]) + " RSSI " + str(beacon['RSSI'])
-        # indice = (-56 - int(beacon['RSSI']) - (value[0]["Xg"])) / (10 * (value[0]["n"]))
-        # d = 10 ** indice
-        # del medie[0]
-        # medie.append(d)
+
         print "La distanza da " + beacon["Maj"] + " e' in metri " + str(beacon['CalculatedDistance'])
 
-        # print "anchor", beacon['CalculatedDistance']
-        # l.append((x - beacon['CalculatedDistance']))
-        # r.append((x + beacon['CalculatedDistance']))
-        # t.append((y + beacon['CalculatedDistance']))
-        # b.append((y - beacon['CalculatedDistance']))
-        # l.append((x - d))
-        # r.append((x + d))
-        # t.append((y + d))
-        # b.append((y - d))
-        # print "Distanza calcolata", (x - beacon['CalculatedDistance'])
+
         l.append((x - beacon['CalculatedDistance']))
         r.append((x + beacon['CalculatedDistance']))
         t.append((y + beacon['CalculatedDistance']))
         b.append((y - beacon['CalculatedDistance']))
-    """print "Maj ", data[1]['Maj']
-    print "RSSI ", data[1]['RSSI']
-    print "RSSI calculated distance", data[1]['CalculatedDistance']
 
-    if (data[1]['Maj']) == '4669':djkombu_queue
-        f = open("beacon.txt", 'a')
-        f.write("Maj " + data[1]['Maj'] + "\n")
-        f.write("RSSI " + data[1]['RSSI'] + "\n")
-        f.write("RSSI calculated distance " + str(data[1]['CalculatedDistance']) + "\n")
-        f.write("---------------------" + "\n")
-        f.close()
-    """
     x_s = (max(l) + min(r)) / 2
     y_s = (min(t) + max(b)) / 2
-    #f = open("coordinate_stimate_min_max.csv", 'a')
-    #f.write(str(x_s) + "," + str(y_s) + "\n")
-    #f.close()
+
     position = {'CoordinateStimate': {'pos_X': x_s, 'pos_Y': y_s}}
     print "Coordinate stimate", x_s, y_s
-    # print "Vertice l", l
+
     return position
 
 
@@ -352,54 +289,31 @@ def calculate_position_min_max_path_loss(beacon_json):
             print "Sto salvando"
             serializer.save()
 
-        z = prova1.get(beacon['Maj'])
+
 
         parameter = ParameterBeacon.objects.filter(idSensor=beacon['Maj'])
         serializer = ParameterBeaconSerializers(parameter, many=True)
         valueRSSI = TrackingBeacon.objects.filter(Maj=beacon['Maj']).order_by('-created')[:20].aggregate(Avg('RSSI'))
         print "Cosa ritorna", valueRSSI['RSSI__avg']
-        # serializerRSSI = TrackingBeaconSerializers(valueRSSI, many=True)
-        # valueDBRSSI=json.loads(json.dumps(serializerRSSI.data))
         value = json.loads(json.dumps(serializer.data))
-        #
+
         print "RSSI0", value[0]["Xg"]
 
         x = value[0]['pos_XM']
-        # print "dict['Name']: ", dict[index]['pos_X']
+
         y = value[0]['pos_YM']
         print "RSSI0 " + str(value[0]["RSSI0"]) + " RSSI " + str(beacon['RSSI'])
         indice = (value[0]["RSSI0"] - valueRSSI['RSSI__avg'] - (value[0]["Xg"])) / (10 * (value[0]["n"]))
         d = 10 ** indice
-        # del medie[0]
-        # medie.append(d)
+
         print "La distanza da " + beacon["Maj"] + " e' in metri " + str(d)
 
-        # print "anchor", beacon['CalculatedDistance']
-        # l.append((x - beacon['CalculatedDistance']))
-        # r.append((x + beacon['CalculatedDistance']))
-        # t.append((y + beacon['CalculatedDistance']))
-        # b.append((y - beacon['CalculatedDistance']))
+
         l.append((x - d))
         r.append((x + d))
         t.append((y + d))
         b.append((y - d))
-        # print "Distanza calcolata", (x - beacon['CalculatedDistance'])
-        # l.append((x - beacon['CalculatedDistance']))
-        # r.append((x + beacon['CalculatedDistance']))
-        # t.append((y + beacon['CalculatedDistance']))
-        # b.append((y - beacon['CalculatedDistance']))
-    """print "Maj ", data[1]['Maj']
-    print "RSSI ", data[1]['RSSI']
-    print "RSSI calculated distance", data[1]['CalculatedDistance']
 
-    if (data[1]['Maj']) == '4669':
-        f = open("beacon.txt", 'a')
-        f.write("Maj " + data[1]['Maj'] + "\n")
-        f.write("RSSI " + data[1]['RSSI'] + "\n")
-        f.write("RSSI calculated distance " + str(data[1]['CalculatedDistance']) + "\n")
-        f.write("---------------------" + "\n")
-        f.close()
-    """
     x_s = (max(l) + min(r)) / 2
     y_s = (min(t) + max(b)) / 2
     #f = open("coordinate_stimate_min_max_path_loss.csv", 'a')
@@ -407,7 +321,7 @@ def calculate_position_min_max_path_loss(beacon_json):
     #f.close()
     position = {'CoordinateStimate': {'pos_X': x_s, 'pos_Y': y_s}}
     print "Coordinate stimate", x_s, y_s
-    # print "Vertice l", l
+
     return position
 
 
@@ -422,7 +336,7 @@ def download_file(request, filename):
         response = HttpResponse(fp.read(), content_type='application/force-download')
         fp.close()
         response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(filename)
-        # response['X-Sendfile'] = smart_str('/media/' + filename)
+
         response.write(smart_str('/media/' + filename))
         # It's usually a good idea to set the 'Content-Length' header too.
         # You can also set any other required headers: Cache-Control, etc.
@@ -440,8 +354,6 @@ def download_map(request, filename):
         response = HttpResponse(fp.read(), content_type='application/force-download')
         fp.close()
         response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(filename)
-        # response['X-Sendfile'] = smart_str('/media/' + filename)
         response.write(smart_str('/media/map/' + filename))
-        # It's usually a good idea to set the 'Content-Length' header too.
-        # You can also set any other required headers: Cache-Control, etc.
+
         return response

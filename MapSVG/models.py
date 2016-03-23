@@ -21,9 +21,6 @@ class Document(models.Model):
     Type = models.CharField(max_length=10)
     url = models.CharField(max_length=256)
     Comment = models.CharField(max_length=256, default="No Comment")
-    # pos_X = models.DecimalField(default=0, max_digits=5, decimal_places=2)
-    # pos_Y = models.DecimalField(default=0, max_digits=5, decimal_places=2)
-    # pos_Z = models.DecimalField(default=0, max_digits=5, decimal_places=2)
     pos_X = models.FloatField(default=0)
     pos_Y = models.FloatField(default=0)
     pos_Z = models.FloatField(default=0)
@@ -55,16 +52,3 @@ class TrackingBeacon(models.Model):
     def __unicode__(self):
         return self.UUID
 
-"""
-from apscheduler.schedulers.blocking import BlockingScheduler
-
-sched = BlockingScheduler()
-
-
-@sched.scheduled_job('interval', id='my_job_id', seconds=5)
-def my_interval_job():
-    print 'Hello World!'
-
-
-sched.start()
-"""

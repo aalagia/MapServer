@@ -21,9 +21,8 @@ urlpatterns = [
     url(r'^beaconData/(?P<idMappa>[a-zA-Z0-9]+)$', views.beacon_data),
     url(r'^download/$', views.download_file),
     url(r'^download/(?P<filename>.*)$', views.download_file),
-    url(r'^', TemplateView.as_view(template_name='SpinMap2.html')),
-    #url(r'^/$', views.simple_html_view),
-    # url(r'^download/(?P<file_name>[a-zA-Z0-9]+)$', views.download_file)
+    url(r'^', TemplateView.as_view(template_name='templates/Map.html')),
+
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

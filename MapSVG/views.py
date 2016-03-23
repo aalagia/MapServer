@@ -17,16 +17,10 @@ from django.db.models import Avg
 from django.utils.encoding import smart_str
 import os
 import re
-from datetime import datetime
-
-import pprint
-from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import get_object_or_404
-
-from rest_framework.parsers import JSONParser
 import json
 
 
+# Classe che crea un JSON di risposta
 class JSONResponse(HttpResponse):
     """
     An HttpResponse that renders its content into JSON.
@@ -39,6 +33,7 @@ class JSONResponse(HttpResponse):
         super(JSONResponse, self).__init__(content, **kwargs)
 
 
+# Funzione che server per pulire i nomi dei file
 def urlify(s):
     # Remove all non-word characters (everything except numbers and letters)
     s = re.sub(r"[^\w\s\.]", '', s)
@@ -49,6 +44,7 @@ def urlify(s):
     return s
 
 
+# Funzione che restituisce la lista delle mappe disponibili
 @api_view(['GET', 'POST'])
 def map_list(request):
     if request.method == 'GET':
@@ -57,6 +53,9 @@ def map_list(request):
         return JSONResponse(serializer.data, status=201)
 
 
+# Funzione che in presenza chi una richiesta GET restituisce un JSON
+# con le informazioni riguardanti i contenuti multimediali sulla mappa
+# in caso di richiesta POST fa l'upload di un file sul server
 @api_view(['GET', 'POST'])
 def map_request(request, idMappa):
     if request.method == 'GET':
@@ -79,7 +78,6 @@ def map_request(request, idMappa):
             print "Sto salvando"
             serializer.save()
 
-
         destination = open(location, 'wb+')
         print "Sono qui"
         for chunk in up_file.chunks():
@@ -87,10 +85,11 @@ def map_request(request, idMappa):
 
         destination.close()
 
-
         return JSONResponse(location, status=201)
 
 
+# Funzione che ad una richiesta POST chiama la funzione che
+# gestisce l'algoritmo di posizionamento
 
 @api_view(['GET', 'POST'])
 def beacon_data(request):
@@ -105,6 +104,8 @@ def beacon_data(request):
     return JSONResponse(response, status=201)
 
 
+# Funzione che implementa l'algoritmo min-max usando come distanza
+# il valore calcolato dalla libreira AltBeacon
 def calculate_position_min_max(beacon_json):
     data = json.loads(beacon_json)
 
@@ -114,7 +115,6 @@ def calculate_position_min_max(beacon_json):
     b = []
     for beacon in data:
         index = str(beacon['Maj'])
-
 
         parameter = ParameterBeacon.objects.filter(idSensor=beacon['Maj'])
         serializer = ParameterBeaconSerializers(parameter, many=True)
@@ -130,7 +130,6 @@ def calculate_position_min_max(beacon_json):
 
         print "La distanza da " + beacon["Maj"] + " e' in metri " + str(beacon['CalculatedDistance'])
 
-
         l.append((x - beacon['CalculatedDistance']))
         r.append((x + beacon['CalculatedDistance']))
         t.append((y + beacon['CalculatedDistance']))
@@ -145,6 +144,7 @@ def calculate_position_min_max(beacon_json):
     return position
 
 
+# Funzione che implementa l'agoritmo di trilaterazine
 def calculate_position_trilateration(beacon_json):
     data = json.loads(beacon_json)
     beacon = sorted(data, key=lambda k: int(k['CalculatedDistance']), reverse=False)
@@ -204,6 +204,8 @@ def calculate_position_trilateration(beacon_json):
     """
 
 
+# Funzione che implemena il min-max e calcola il path loss
+# secondo un funzione descritta dall'app beaconbox
 def calculate_position_min_max_path_loss_box(beacon_json):
     data = json.loads(beacon_json)
 
@@ -216,8 +218,6 @@ def calculate_position_min_max_path_loss_box(beacon_json):
         if serializer.is_valid():
             print "Sto salvando"
             serializer.save()
-
-
 
         parameter = ParameterBeacon.objects.filter(idSensor=beacon['Maj'])
         serializer = ParameterBeaconSerializers(parameter, many=True)
@@ -274,6 +274,8 @@ def calculate_position_min_max_path_loss_box(beacon_json):
     return position
 
 
+# Funzione che implementa l'algoritmo min-max e calcola le distanze
+# dai beacon utilizzando il modello indoor path loss
 def calculate_position_min_max_path_loss(beacon_json):
     data = json.loads(beacon_json)
 
@@ -288,8 +290,6 @@ def calculate_position_min_max_path_loss(beacon_json):
         if serializer.is_valid():
             print "Sto salvando"
             serializer.save()
-
-
 
         parameter = ParameterBeacon.objects.filter(idSensor=beacon['Maj'])
         serializer = ParameterBeaconSerializers(parameter, many=True)
@@ -308,7 +308,6 @@ def calculate_position_min_max_path_loss(beacon_json):
 
         print "La distanza da " + beacon["Maj"] + " e' in metri " + str(d)
 
-
         l.append((x - d))
         r.append((x + d))
         t.append((y + d))
@@ -316,15 +315,16 @@ def calculate_position_min_max_path_loss(beacon_json):
 
     x_s = (max(l) + min(r)) / 2
     y_s = (min(t) + max(b)) / 2
-    #f = open("coordinate_stimate_min_max_path_loss.csv", 'a')
-    #f.write(str(x_s) + "," + str(y_s) + "\n")
-    #f.close()
+    # f = open("coordinate_stimate_min_max_path_loss.csv", 'a')
+    # f.write(str(x_s) + "," + str(y_s) + "\n")
+    # f.close()
     position = {'CoordinateStimate': {'pos_X': x_s, 'pos_Y': y_s}}
     print "Coordinate stimate", x_s, y_s
 
     return position
 
 
+# Funzione che restiuisce un contenuto multimediale quando viene richiesto
 @api_view(['GET', 'POST'])
 def download_file(request, filename):
     print "Percorso ", smart_str('/media/' + filename)
@@ -343,6 +343,7 @@ def download_file(request, filename):
         return response
 
 
+# Funzione che restituisce la mappa richiesta dall'operatore
 @api_view(['GET', 'POST'])
 def download_map(request, filename):
     print "Percorso ", smart_str('/media/map/' + filename)

@@ -10,11 +10,11 @@ STYLE_CHOICES = sorted((item, item) for item in get_all_styles())
 
 
 # Create your models here.
-
+# Contiene la lista delle mappi disponibili
 class Map(models.Model):
     idMappa = models.CharField(max_length=20)
 
-
+# Contiene la lista dei documenti disponibili
 class Document(models.Model):
     idMappa = models.CharField(max_length=20)
     Title = models.CharField(max_length=30)
@@ -25,7 +25,7 @@ class Document(models.Model):
     pos_Y = models.FloatField(default=0)
     pos_Z = models.FloatField(default=0)
 
-
+# Contiene i parametri riguardanti i beacon
 class ParameterBeacon(models.Model):
     idMappa = models.CharField(max_length=20)
     idSensor = models.IntegerField()
@@ -38,7 +38,7 @@ class ParameterBeacon(models.Model):
     RSSI0Box = models.FloatField(default=0)
     coff = models.FloatField(default=0)
 
-
+# Memorizza i JSON ricevuti dal tablet
 class TrackingBeacon(models.Model):
     UUID = models.CharField(max_length=50)
     Maj = models.CharField(max_length=10)
